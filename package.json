@@ -1,0 +1,39 @@
+{
+  "name": "penplot-stroke",
+  "version": "1.0.0",
+  "description": "A helper algorithm for pen plotting strokes with variable thicknesses and properties based off a fixed pen tip size",
+  "main": "penplot-stroke.js",
+  "dependencies": {
+    "new-array": "^1.0.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup": "^0.63.5",
+    "vector": "^1.0.0",
+    "rollup-plugin-commonjs": "^9.1.4"
+  },
+  "devDependencies": {
+    "rollup": "^0.63.5",
+    "rollup-plugin-commonjs": "^9.1.4",
+    "rollup-plugin-node-resolve": "^3.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Evelios/penplot-stroke.git"
+  },
+  "keywords": [
+    "penplot",
+    "stroke",
+    "geometry",
+    "line",
+    "2d"
+  ],
+  "author": "Thomas Waters",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Evelios/penplot-stroke/issues"
+  },
+  "homepage": "https://github.com/Evelios/penplot-stroke#readme"
+}
