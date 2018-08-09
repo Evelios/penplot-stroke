@@ -17,7 +17,9 @@ let stroke_paths;
 
 let params = {
     // Parameters
-
+    line_width : 10,
+    pen_width : 2,
+    draw_width : 1
     // Options
 };
 
@@ -36,9 +38,9 @@ function setUpGui() {
     const gui = new dat.GUI();
 
     // gui.add(params, "seed", 1, 5, 1).name("RNG Seed").onChange(createAndRender);
-    // gui.add(params, "density", 15, 50, 1).name("Point Density").onChange(createAndRender);
-    // gui.add(params, "jitter", 0, 2, 0.1).name("Point Jitter").onChange(createAndRender);
-    // gui.add(params, "distribution", params.distributions).name("Distribution").onChange(createAndRender);
+    gui.add(params, "line_width", 1, 50, 1).name("Line Thickness").onChange(createAndRender);
+    gui.add(params, "pen_width", 15, 50, 1).name("Stroke Width").onChange(createAndRender);
+    gui.add(params, "draw_width", 0, 2, 0.1).name("Drawing width").onChange(createAndRender);
 }
 
 function createAndRender() {
@@ -55,13 +57,14 @@ function create() {
         pointInBbox(),
     ];
 
-    stroke_paths = createStroke(path, 10, 1);
+    stroke_paths = createStroke(path, params.line_width, params.pen_width);
 }
 
 function render() {
     background(bgColor.toHexString());
 
-    strokeWeight(1);
+    // Draw the weighted stroke path
+    strokeWeight(params.draw_width);
     stroke(primaryColor.toHexString());
     for (const stroke_path of stroke_paths) {
         for (let i = 0; i < stroke_path.length - 1; i++) {
@@ -71,7 +74,8 @@ function render() {
         }
     }
 
-    strokeWeight(2);
+    // Draw origional line
+    strokeWeight(params.draw_width);
     stroke(tertiaryColor.toHexString());
     for (let i = 0; i < path.length - 1; i++) {
         const p1 = path[i];

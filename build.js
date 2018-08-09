@@ -553,39 +553,97 @@ var createStroke = (function () {
 
   }());
 
+  /**
+       * Returns the intersection of two line segments. If there is no
+       * intersection, then the function returns null
+       * 
+       * @static
+       * @param {number[][2]} line1 The first line
+       * @param {number[][2]} line2 The second line
+       * @return {number[2] | false} The vector intersection point or flase if there
+       *   is no intersection point
+       * @memberof Line
+       * @see {@link https://www.swtestacademy.com/intersection-convex-polygons-algorithm/}
+       */
+  var lineIntersection = function intersection(line1, line2) {
+    const l1_p1 = line1[0];
+    const l1_p2 = line1[1];
+    const l2_p1 = line2[0];
+    const l2_p2 = line2[1];
+    const A1 = l1_p2[1] - l1_p1[1];
+    const B1 = l1_p1[0] - l1_p2[0];
+    const C1 = A1 * l1_p1[0] + B1 * l1_p1[1];
+
+    const A2 = l2_p2[1] - l2_p1[1];
+    const B2 = l2_p1[0] - l2_p2[0];
+    const C2 = A2 * l2_p1[0] + B2 * l2_p1[1];
+
+    const det = A1 * B2 - A2 * B1;
+    if (fequals(det, 0)) {
+      return null;
+    }
+    else {
+      const x = (B2 * C1 - B1 * C2) / det;
+      const y = (A1 * C2 - A2 * C1) / det;
+      
+        return [x, y];
+    }
+    return false;
+
+    /**
+     * Compare two floating point numbers for equality
+     * 
+     * @export
+     * @param {numeric} float1 First floating point number
+     * @param {numeric} float2 Second floating point number
+     * @return {bool} True if the two points are (almost) equal
+     */
+    function fequals(float1, float2) {
+      return Math.abs(float1 - float2) < Number.EPSILON;
+    }
+  };
+
   function stroke(path, line_width, pen_thickness) {
 
     const num_strokes = Math.ceil(line_width / pen_thickness);
     const stroke_offset = line_width / num_strokes;
 
+    console.log("Num Strokes   : ", num_strokes);
+    console.log("Stroke offset : ", stroke_offset);
+
     return newArray_1(num_strokes).map((_, stroke_index) => {
       return path.map((vertex, vertex_index, verticies) => {
-        let angle_offset;
+        const previous_index = (vertex_index - 1 + verticies.length) % verticies.length;
+        const next_index = (vertex_index + 1) % verticies.length;
+        console.log("Prev : ", previous_index);
+        console.log("Curr : ", vertex_index);
+        console.log("Next : ", next_index);
 
-        // Save the edge cases
-        // if ((vertex_index === 0 || vertex_index === verticies.length - 1) &&
-        //     !Vector.equals(verticies[0], verticies[verticies.length - 1])) {
-        if (vertex_index === 0 || vertex_index === verticies.length - 1) {
-          // Use the perpendicular to the current segment as the reference line
-          const other_vertex = vertex_index === 0 ? verticies[1] : verticies[verticies.length - 2];
-          angle_offset = Math.PI/2 + Vector.angle(Vector.subtract(vertex, other_vertex));
+        const previous_vertex = verticies[previous_index];
+        const next_vertex = verticies[next_index];
 
-        } else {
-          // Use the angle bisector of the vertex and it's neighbors as the reference line
-          const left_vertex = verticies[Math.abs((vertex_index - 1) % verticies.length)];
-          const right_vertex = verticies[(vertex_index + 1) % verticies.length];
+        const previous_segment = offsetLineSegment([previous_vertex, vertex], stroke_offset);
+        const next_segment = offsetLineSegment([next_vertex, vertex], stroke_offset);
 
-          const left_angle = Vector.angle(Vector.subtract(vertex, left_vertex));
-          const right_angle = Vector.angle(Vector.subtract(vertex, right_vertex));
-
-          angle_offset = right_angle - left_angle;
-        }
-        
-        // Calculate the offset vector based on the angle of the reference line
-        const vertex_offset = Vector.Polar(stroke_index * stroke_offset, angle_offset);
-        return Vector.add(vertex, vertex_offset);
+        return lineIntersection(previous_segment, next_segment);
 
       });
+
+      // Helper Function
+
+      function offsetLineSegment(line, dist) {
+        console.log(line);
+        const angle = Vector.angle(Vector.subtract(line[0], line[1]));
+
+        console.log([
+          Vector.add(line[0], Vector.Polar(dist, angle + Math.PI / 2)),
+          Vector.add(line[1], Vector.Polar(dist, angle + Math.PI / 2))
+        ]);
+        return [
+          Vector.add(line[0], Vector.Polar(dist, angle + Math.PI / 2)),
+          Vector.add(line[1], Vector.Polar(dist, angle + Math.PI / 2))
+        ];
+      }
     });
   }
 

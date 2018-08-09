@@ -4,11 +4,10 @@
   "description": "A helper algorithm for pen plotting strokes with variable thicknesses and properties based off a fixed pen tip size",
   "main": "penplot-stroke.js",
   "dependencies": {
+    "dependencies": "0.0.1",
+    "line-intersection": "git+https://github.com/Evelios/line-Intersection.git",
     "new-array": "^1.0.0",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup": "^0.63.5",
-    "vector": "^1.0.0",
-    "rollup-plugin-commonjs": "^9.1.4"
+    "vector": "https://github.com/Evelios/Vector.git"
   },
   "devDependencies": {
     "rollup": "^0.63.5",

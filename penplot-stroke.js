@@ -1,5 +1,6 @@
 import array from 'new-array';
 import Vector from 'vector';
+import lineIntersection from 'line-intersection';
 
 export default function stroke(path, line_width, pen_thickness) {
   "use strict";
@@ -7,33 +8,41 @@ export default function stroke(path, line_width, pen_thickness) {
   const num_strokes = Math.ceil(line_width / pen_thickness);
   const stroke_offset = line_width / num_strokes;
 
+  console.log("Num Strokes   : ", num_strokes);
+  console.log("Stroke offset : ", stroke_offset);
+
   return array(num_strokes).map((_, stroke_index) => {
     return path.map((vertex, vertex_index, verticies) => {
-      let angle_offset;
+      const previous_index = (vertex_index - 1 + verticies.length) % verticies.length;
+      const next_index = (vertex_index + 1) % verticies.length;
+      //console.log("Prev : ", previous_index);
+      //console.log("Curr : ", vertex_index);
+      //console.log("Next : ", next_index);
 
-      // Save the edge cases
-      // if ((vertex_index === 0 || vertex_index === verticies.length - 1) &&
-      //     !Vector.equals(verticies[0], verticies[verticies.length - 1])) {
-      if (vertex_index === 0 || vertex_index === verticies.length - 1) {
-        // Use the perpendicular to the current segment as the reference line
-        const other_vertex = vertex_index === 0 ? verticies[1] : verticies[verticies.length - 2];
-        angle_offset = Math.PI/2 + Vector.angle(Vector.subtract(vertex, other_vertex));
+      const previous_vertex = verticies[previous_index];
+      const next_vertex = verticies[next_index];
 
-      } else {
-        // Use the angle bisector of the vertex and it's neighbors as the reference line
-        const left_vertex = verticies[Math.abs((vertex_index - 1) % verticies.length)];
-        const right_vertex = verticies[(vertex_index + 1) % verticies.length];
+      const previous_segment = offsetLineSegment([previous_vertex, vertex], stroke_offset);
+      const next_segment = offsetLineSegment([next_vertex, vertex], stroke_offset);
 
-        const left_angle = Vector.angle(Vector.subtract(vertex, left_vertex));
-        const right_angle = Vector.angle(Vector.subtract(vertex, right_vertex));
-
-        angle_offset = left_angle - right_angle;
-      }
-      
-      // Calculate the offset vector based on the angle of the reference line
-      const vertex_offset = Vector.Polar(stroke_index * stroke_offset, angle_offset);
-      return Vector.add(vertex, vertex_offset);
+      return lineIntersection(previous_segment, next_segment);
 
     });
+
+    // Helper Function
+
+    function offsetLineSegment(line, dist) {
+      console.log(line);
+      const angle = Vector.angle(Vector.subtract(line[0], line[1]));
+
+      console.log([
+        Vector.add(line[0], Vector.Polar(dist, angle + Math.PI / 2)),
+        Vector.add(line[1], Vector.Polar(dist, angle + Math.PI / 2))
+      ]);
+      return [
+        Vector.add(line[0], Vector.Polar(dist, angle + Math.PI / 2)),
+        Vector.add(line[1], Vector.Polar(dist, angle + Math.PI / 2))
+      ];
+    }
   });
 }
