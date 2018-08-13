@@ -637,7 +637,7 @@ var createStroke = (function () {
         const angle = Vector.angle(Vector.subtract(line[0], line[1]));
 
         return [
-          Vector.add(line[0], Vector.Polar(dist, angle - Math.PI/2)),
+          Vector.add(line[0], Vector.Polar(dist, angle + Math.PI/2)),
           Vector.add(line[1], Vector.Polar(dist, angle + Math.PI/2))
         ];
       }
