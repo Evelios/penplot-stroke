@@ -7,11 +7,17 @@ export default function stroke(path, line_width, pen_thickness) {
 
   const num_strokes = Math.ceil(line_width / pen_thickness);
   const stroke_offset = line_width / num_strokes;
+  const closed_path = Vector.equals(path[0], path[path.length - 1]);
+
+  console.log(path[0]);
+  console.log(path[path.length - 1]);
+  console.log(closed_path);
 
   return array(num_strokes).map((_, stroke_index) => {
     return path.map((vertex, vertex_index, verticies) => {
-      const previous_index = (vertex_index - 1 + verticies.length) % verticies.length;
-      const next_index = (vertex_index + 1) % verticies.length;
+      const max_index = closed_path ? verticies.length - 1 : verticies.length;
+      const previous_index = (vertex_index - 1 + max_index) % max_index;
+      const next_index = (vertex_index + 1) % max_index;
       const current_offset = stroke_offset + stroke_offset * Math.floor(stroke_index / 2);
 
       const previous_vertex = verticies[previous_index];
@@ -21,10 +27,10 @@ export default function stroke(path, line_width, pen_thickness) {
       const previous_segment = offsetLineSegment([previous_vertex, vertex], current_offset, segment_rotation);
       const next_segment = offsetLineSegment([next_vertex, vertex], current_offset, !segment_rotation);
 
-      if (vertex_index === 0) {
+      if (vertex_index === 0 && !closed_path) {
         return next_segment[1];
       }
-      else if (vertex_index === verticies.length - 1) {
+      else if (vertex_index === verticies.length - 1 && !closed_path) {
         return previous_segment[1];
       }
 

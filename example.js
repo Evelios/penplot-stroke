@@ -9,6 +9,7 @@ const tertiaryColor = tinycolor("#27566B");
 const quaternaryColor = tinycolor("#479030");
 
 // Globals
+const padding = 100;
 let width;
 let height;
 let bbox;
@@ -17,9 +18,10 @@ let stroke_paths;
 
 let params = {
     // Parameters
-    line_width : 20,
-    pen_width : 2,
-    draw_width : 1
+    line_width  : 20,
+    pen_width   : 2,
+    draw_width  : 1,
+    closed_path : true
     // Options
 };
 
@@ -41,6 +43,7 @@ function setUpGui() {
     gui.add(params, "line_width", 1, 50, 1).name("Line Thickness").onChange(createAndRender);
     gui.add(params, "pen_width", 1, 10, 1).name("Stroke Width").onChange(createAndRender);
     gui.add(params, "draw_width", 1, 10, 1).name("Drawing width").onChange(createAndRender);
+    gui.add(params, "closed_path").name("Polygon").onChange(createAndRender);
 }
 
 function createAndRender() {
@@ -49,14 +52,19 @@ function createAndRender() {
 }
 
 function create() {
+    const endpoint = pointInBbox();
     path = [
+        endpoint,
         pointInBbox(),
         pointInBbox(),
         pointInBbox(),
         pointInBbox(),
-        pointInBbox(),
-        pointInBbox(),
+        pointInBbox()
     ];
+
+    if (params.closed_path) {
+        path.push(endpoint);
+    }
 
     stroke_paths = createStroke(path, params.line_width, params.pen_width);
 }
@@ -87,7 +95,6 @@ function render() {
 
 //---- Helper Functions ----
 function pointInBbox() {
-    const padding = 50;
     return [
         padding + Math.round(Math.random() * (bbox[0] - padding * 2)),
         padding + Math.round(Math.random() * (bbox[1] - padding * 2))

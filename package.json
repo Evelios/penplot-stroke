@@ -1,6 +1,6 @@
 {
   "name": "penplot-stroke",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A helper algorithm for pen plotting strokes with variable thicknesses and properties based off a fixed pen tip size",
   "main": "penplot-stroke.js",
   "dependencies": {
