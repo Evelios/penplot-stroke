@@ -40,7 +40,7 @@ function setUpGui() {
     // gui.add(params, "seed", 1, 5, 1).name("RNG Seed").onChange(createAndRender);
     gui.add(params, "line_width", 1, 50, 1).name("Line Thickness").onChange(createAndRender);
     gui.add(params, "pen_width", 15, 50, 1).name("Stroke Width").onChange(createAndRender);
-    gui.add(params, "draw_width", 0, 2, 0.1).name("Drawing width").onChange(createAndRender);
+    gui.add(params, "draw_width", 1, 4, 0.1).name("Drawing width").onChange(createAndRender);
 }
 
 function createAndRender() {
@@ -50,6 +50,7 @@ function createAndRender() {
 
 function create() {
     path = [
+        pointInBbox(),
         pointInBbox(),
         pointInBbox(),
         pointInBbox(),

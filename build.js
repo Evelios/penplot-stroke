@@ -615,7 +615,7 @@ var createStroke = (function () {
       return path.map((vertex, vertex_index, verticies) => {
         const previous_index = (vertex_index - 1 + verticies.length) % verticies.length;
         const next_index = (vertex_index + 1) % verticies.length;
-        const current_offset = stroke_offset + stroke_offset * vertex_index;
+        const current_offset = stroke_offset + stroke_offset * stroke_index;
         //console.log("Prev : ", previous_index);
         //console.log("Curr : ", vertex_index);
         //console.log("Next : ", next_index);
