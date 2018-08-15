@@ -8,11 +8,7 @@ export default function stroke(path, line_width, pen_thickness) {
   const num_strokes = Math.ceil(line_width / pen_thickness);
   const stroke_offset = line_width / num_strokes;
   const closed_path = Vector.equals(path[0], path[path.length - 1]);
-
-  console.log(path[0]);
-  console.log(path[path.length - 1]);
-  console.log(closed_path);
-
+  
   return array(num_strokes).map((_, stroke_index) => {
     return path.map((vertex, vertex_index, verticies) => {
       const max_index = closed_path ? verticies.length - 1 : verticies.length;
