@@ -14,7 +14,7 @@ export default {
     {
       name: 'createStroke',
       file: 'build.js',
-      format: 'iife',
+      format: 'umd',
       interop: false,
     },    
   ],

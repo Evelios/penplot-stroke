@@ -21,8 +21,12 @@ const output_paths = [
 // Include with ES 6
 import createStroke from 'penplot-stroke';
 
+// Include with Node's CJS
+const createStroke = require('penplot-stroke');
+
 // Include in Browser HTML
 <script src="node_modules/penplot-stroke/build.js"></script>
+    // creates the global 'createStroke'
 
 // Set up parameters
 const input_path = [ [1, 2], [5, 7], [3, 5] ];
