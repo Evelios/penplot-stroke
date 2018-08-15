@@ -77,6 +77,10 @@ They offten shoot way off of the corner which is causing the issue.
 
 # Release Notes
 
+# 1.1.1
+The input path was left out of the output paths. Fixed the issue and made sure to
+return the input path as well.
+
 # 1.1.0
 Added support for smooth polygon filling. Before this algorithm only supported
 paths with two different endpoints. This caused artifects at the polygon
