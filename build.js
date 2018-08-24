@@ -612,24 +612,26 @@
 
   function stroke(path, line_width, pen_thickness, options) {
 
+    // ---- Options -----
     const defaults = {
+      polygon : false,
       endcap : 'none',          // none, square, circle, triangle, indent
       corner : 'square',        // square, --not supported--> round, bevel
       line_style : [],          // Used for creating dashed lines, must be even length
       align_stroke : 'center',  // center, --not supported--> inset, outset
     };
-
     const params = Object.assign({}, defaults, options);
+
+    // Is the path a polygon
+    const working_path = params.polygon ? path.concat([path[0]]) : path;
+    const closed_path = Vector.equals(working_path[0], working_path[working_path.length - 1]);
 
     // Calculate the number of strokes to draw and the proper spacing between them
     const num_strokes = Math.max(Math.ceil(line_width / pen_thickness), 1);
     const stroke_offset = line_width / num_strokes;
-
-    // Is the path a polygon
-    const closed_path = Vector.equals(path[0], path[path.length - 1]);
     
     return newArray_1(num_strokes).map((_, stroke_index) => {
-      return path.map((vertex, vertex_index, verticies) => {
+      return working_path.map((vertex, vertex_index, verticies) => {
 
         // Calculate the indecies of the next verticies
         const max_index = closed_path ? verticies.length - 1 : verticies.length;
@@ -664,7 +666,6 @@
       });
 
     });
-    // }).concat([path]); // Make sure to output the origional line
 
     /**
      * Get the line that is shifted perpendicular to the input line

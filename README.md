@@ -73,14 +73,8 @@ thickness of the strokes.
 I am looking to add some features in the future as I see fit.  
 They are listed here in no particular order.  
 + Take an options argument to select particular features of the algorithm
-+ Set input path as polygon 
-  + Input polygon defined without repeated first and last vertex
-+ Different styles of endcapes
-  + Square (current default)
-  + Rounded
-  + Angled
-+ Choose a fill direction
-  + Expand (current default)
++ Choose a stroke alignment (fill direction)
+  + None (current default)
   + Inset
   + Outset
 

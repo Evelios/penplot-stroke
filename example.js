@@ -27,7 +27,7 @@ const params = {
     stroke_alignment : 'center',
     corner_style     : 'square',
     line_style       : 'line',
-    closed_path      : false,
+    polygon      : false,
     show_input_line  : true,
 
     // Options
@@ -84,7 +84,7 @@ function setUpGui() {
     gui.add(params, "stroke_alignment", params.stroke_alignments).name("Stroke Alignment").onChange(createAndRender);
     gui.add(params, "corner_style", params.corner_styles).name("Stroke Alignment").onChange(createAndRender);
     gui.add(params, "line_style", params.line_styles).name("Line Style").onChange(createAndRender);
-    gui.add(params, "closed_path").name("Polygon").onChange(createAndRender);
+    gui.add(params, "polygon").name("Polygon").onChange(createAndRender);
     gui.add(params, "show_input_line").name("Show Input Line").onChange(render);
 }
 
@@ -96,9 +96,8 @@ function createAndRender() {
 function create() {
     rng = new Alea(params.seed);
 
-    const endpoint = pointInBbox();
     path = [
-        endpoint,
+        pointInBbox(),
         pointInBbox(),
         pointInBbox(),
         pointInBbox(),
@@ -106,11 +105,9 @@ function create() {
         pointInBbox()
     ];
 
-    if (params.closed_path) {
-        path.push(endpoint);
-    }
 
     stroke_paths = createStroke(path, params.line_width, params.pen_width, {
+        polygon : params.polygon,
         endcap : params.endcap,
         corner : params.corner_style,
         line_style : params.line_style,
