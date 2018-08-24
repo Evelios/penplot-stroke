@@ -706,7 +706,7 @@
       const extension_fn = endcap_extension[params.endcap] || endcap_extension.none;
       console.assert(endcap_extension[params.endcap] !== undefined, 'Invalid End Cap Assignment :', params.endcap);
 
-      const point_offset = extension_fn(line_offset * 2, line_width);
+      const point_offset = extension_fn(line_offset, line_width / 2);
       return Vector.offset(point, point_offset, angle);
     }
   }

@@ -16,7 +16,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "dev" : "watch -p \"penplot-stroke.js\" -c \"npm run build\""
   },
   "repository": {
     "type": "git",
