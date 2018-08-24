@@ -28,6 +28,7 @@ const params = {
     corner_style     : 'square',
     line_style       : 'line',
     closed_path      : false,
+    show_input_line  : true,
 
     // Options
     endcaps : [
@@ -35,6 +36,7 @@ const params = {
         'square',
         'round',
         'triangle',
+        'indent',
     ],
     stroke_alignments : [
         'center',
@@ -83,6 +85,7 @@ function setUpGui() {
     gui.add(params, "corner_style", params.corner_styles).name("Stroke Alignment").onChange(createAndRender);
     gui.add(params, "line_style", params.line_styles).name("Line Style").onChange(createAndRender);
     gui.add(params, "closed_path").name("Polygon").onChange(createAndRender);
+    gui.add(params, "show_input_line").name("Show Input Line").onChange(render);
 }
 
 function createAndRender() {
@@ -130,12 +133,14 @@ function render() {
     }
 
     // Draw origional line
-    strokeWeight(params.draw_width);
-    stroke(tertiaryColor.toHexString());
-    for (let i = 0; i < path.length - 1; i++) {
-        const p1 = path[i];
-        const p2 = path[i + 1];
-        line(p1[0], p1[1], p2[0], p2[1]);
+    if (params.show_input_line) {
+        strokeWeight(params.draw_width);
+        stroke(tertiaryColor.toHexString());
+        for (let i = 0; i < path.length - 1; i++) {
+            const p1 = path[i];
+            const p2 = path[i + 1];
+            line(p1[0], p1[1], p2[0], p2[1]);
+        }
     }
 }
 

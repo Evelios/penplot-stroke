@@ -309,6 +309,9 @@
           return Vector(x_rotated, y_rotated);
       };
 
+      const offset = function(vec, mag, angle) {
+          return add(vec, Polar(mag, angle));
+      };
       
       /**
        * Get the negation of the x and y coordinates of a vector
@@ -535,6 +538,7 @@
           divide: divide,
           normalize: normalize,
           rotate: rotate,
+          offset:offset,
           inverse: inverse,
           dot: dot,
           avg: avg,
@@ -609,7 +613,7 @@
   function stroke(path, line_width, pen_thickness, options) {
 
     const defaults = {
-      endcap : 'none',          // none, square, circle, triangle
+      endcap : 'none',          // none, square, circle, triangle, indent
       corner : 'square',        // square, --not supported--> round, bevel
       line_style : [],          // Used for creating dashed lines, must be even length
       align_stroke : 'center',  // center, --not supported--> inset, outset
@@ -624,14 +628,14 @@
     // Is the path a polygon
     const closed_path = Vector.equals(path[0], path[path.length - 1]);
     
-    return newArray_1(num_strokes - 1).map((_, stroke_index) => {
+    return newArray_1(num_strokes).map((_, stroke_index) => {
       return path.map((vertex, vertex_index, verticies) => {
 
         // Calculate the indecies of the next verticies
         const max_index = closed_path ? verticies.length - 1 : verticies.length;
         const previous_index = (vertex_index - 1 + max_index) % max_index;
         const next_index = (vertex_index + 1) % max_index;
-        const current_offset = stroke_offset + stroke_offset * Math.floor(stroke_index / 2);
+        const current_offset = stroke_offset * Math.floor(stroke_index / 2);
 
         // Get the previous and next verticies
         const previous_vertex = verticies[previous_index];
@@ -644,10 +648,14 @@
 
         // Account for edge cases of endpoints when the path isn't a polygon
         if (vertex_index === 0 && !closed_path) {
-          return next_segment[1];
+          const line_angle = Vector.angle(Vector.subtract(next_segment[1], next_segment[0]));
+          return addEndcap(next_segment[1], current_offset, line_angle);
+          // return next_segment[1];
         }
         else if (vertex_index === verticies.length - 1 && !closed_path) {
-          return previous_segment[1];
+          const line_angle = Vector.angle(Vector.subtract(previous_segment[1], previous_segment[0]));
+          return addEndcap(previous_segment[1], current_offset, line_angle);
+          // return previous_segment[1];
         }
 
         // Add the intersection of the two offset lines
@@ -655,7 +663,8 @@
 
       });
 
-    }).concat([path]); // Make sure to output the origional line
+    });
+    // }).concat([path]); // Make sure to output the origional line
 
     /**
      * Get the line that is shifted perpendicular to the input line
@@ -675,6 +684,30 @@
         Vector.add(line[0], offset),
         Vector.add(line[1], offset)
       ];
+    }
+
+    /**
+     * Add the endcap style to the end point of the path
+     * 
+     * @param {any} point The endpoint
+     * @param {any} offset The current offset of the line from the input line
+     * @param {any} stroke_width The total stroke width
+     * @param {any} angle The angle of the current segment that is being worked on
+     */
+    function addEndcap(point, line_offset, angle) {
+      const endcap_extension = {
+        none     : ((dx, w) => 0),
+        square   : ((dx, w) => w),
+        round    : ((dx, w) => Math.sqrt(w*w - dx*dx)),
+        triangle : ((dx, w) => w - dx),
+        indent   : ((dx, w) => dx),
+      };
+
+      const extension_fn = endcap_extension[params.endcap] || endcap_extension.none;
+      console.assert(endcap_extension[params.endcap] !== undefined, 'Invalid End Cap Assignment :', params.endcap);
+
+      const point_offset = extension_fn(line_offset * 2, line_width);
+      return Vector.offset(point, point_offset, angle);
     }
   }
 
