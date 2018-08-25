@@ -21,10 +21,21 @@ const output_paths = [
 
 The options are as follows with the default and all the posible options listed.
 ```js
-options = {
-  endcap : 'none', // square, triangle, inset
+defaults = {
+  endcap           : 'none', // square, triangle, inset
+  polygon          : false,  // boolean
+  line_width_style : [1]     // numbered list
 }
 ```
+
+**Options**
++ endcap : The visual style of the enpoints of the stroke
++ polygon : Close off the input path so that it connect the endpoints
++ line_width_style : The line width on a per-vertex basis
+  - The input array varys the line width based on the ratio of the max line
+    width
+  - The line width can any length greater than one be up to the length of the
+    input path
 
 ### Code Example
 
@@ -48,9 +59,14 @@ const pen_thickness = 1; // The thickness of each individual pen line
 const output_paths = createStroke(path, line_width, pen_thickness);
 // > outputs 4 paths because you need 4 pen strokes to fill the line width of 1
 
-
 // Specifying parameters to create a strike with
-const rounded_paths = createStroke(path, line_width, pen_thickness, { endcap : 'round' });
+const rounded_paths = createStroke(path, line_width, pen_thickness, 
+  { 
+    endcap : 'round',
+    polygon : true,
+    line_width_style : [1, 2, 1, 1/2, 0]
+  }
+);
 ```
 
 This algorithm can also handle complete polygon paths. That is the polygon is
@@ -86,8 +102,15 @@ They offten shoot way off of the corner which is causing the issue.
 
 # Release Notes
 
+# 1.1.4
+Added the option to vary the line width per vertex based on the ratio of the
+pen width.
+
+# 1.1.3
+Added the option to close the input path off and turn it into a polygon.
+
 # 1.1.2
-Added the ability to choose the endcap feature for a non-closed stroke.
+Added the option to choose the endcap feature for a non-closed stroke.
 
 # 1.1.1
 The input path was left out of the output paths. Fixed the issue and made sure to

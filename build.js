@@ -614,17 +614,27 @@
 
     // ---- Options -----
     const defaults = {
-      polygon : false,
-      endcap : 'none',          // none, square, circle, triangle, indent
-      corner : 'square',        // square, --not supported--> round, bevel
-      line_style : [],          // Used for creating dashed lines, must be even length
-      align_stroke : 'center',  // center, --not supported--> inset, outset
+      polygon          : false,     // Should the input path be a closed polygon
+      endcap           : 'none',    // none, square, circle, triangle, indent
+      corner           : 'square',  // square, #-not supported--> round, bevel
+      line_style       : [],        // Used for creating dashed lines, must be even length
+      align_stroke     : 'center',  // center, #-not supported--> inset, outset
+      line_width_style : [1]        // Used for varying the line width
     };
     const params = Object.assign({}, defaults, options);
 
-    // Is the path a polygon
-    const working_path = params.polygon ? path.concat([path[0]]) : path;
-    const closed_path = Vector.equals(working_path[0], working_path[working_path.length - 1]);
+    // console.log('Polygon          : ', params.polygon);
+    // console.log('Endcap           : ', params.endcap);
+    // console.log('Corner           : ', params.corner);
+    // console.log('Line Style       : ', params.line_style);
+    // console.log('Align Stroke     : ', params.align_stroke);
+    // console.log('Line Width Style : ', params.line_width_style);
+
+    const input_endpoints_equal = Vector.equals(path[0],path[path.length - 1]);
+    const is_polygon = params.polygon || input_endpoints_equal;
+    const working_path = params.polygon && !input_endpoints_equal ?
+      path.concat([path[0]]) :
+      path;
 
     // Calculate the number of strokes to draw and the proper spacing between them
     const num_strokes = Math.max(Math.ceil(line_width / pen_thickness), 1);
@@ -634,10 +644,16 @@
       return working_path.map((vertex, vertex_index, verticies) => {
 
         // Calculate the indecies of the next verticies
-        const max_index = closed_path ? verticies.length - 1 : verticies.length;
+        const max_index = is_polygon ? verticies.length - 1 : verticies.length;
         const previous_index = (vertex_index - 1 + max_index) % max_index;
         const next_index = (vertex_index + 1) % max_index;
-        const current_offset = stroke_offset * Math.floor(stroke_index / 2);
+
+        // Calculate the current stroke offset from the input line
+        const line_width_modifier = params.line_width_style[
+          vertex_index % params.line_width_style.length
+        ];
+
+        const current_offset = line_width_modifier * stroke_offset * Math.floor(stroke_index / 2);
 
         // Get the previous and next verticies
         const previous_vertex = verticies[previous_index];
@@ -649,15 +665,13 @@
         const next_segment = offsetLineSegment([next_vertex, vertex], current_offset, !segment_rotation);
 
         // Account for edge cases of endpoints when the path isn't a polygon
-        if (vertex_index === 0 && !closed_path) {
+        if (vertex_index === 0 && !is_polygon) {
           const line_angle = Vector.angle(Vector.subtract(next_segment[1], next_segment[0]));
-          return addEndcap(next_segment[1], current_offset, line_angle);
-          // return next_segment[1];
+          return addEndcap(next_segment[1], current_offset, line_width_modifier, line_angle);
         }
-        else if (vertex_index === verticies.length - 1 && !closed_path) {
+        else if (vertex_index === verticies.length - 1 && !is_polygon) {
           const line_angle = Vector.angle(Vector.subtract(previous_segment[1], previous_segment[0]));
-          return addEndcap(previous_segment[1], current_offset, line_angle);
-          // return previous_segment[1];
+          return addEndcap(previous_segment[1], current_offset, line_width_modifier, line_angle);
         }
 
         // Add the intersection of the two offset lines
@@ -695,7 +709,7 @@
      * @param {any} stroke_width The total stroke width
      * @param {any} angle The angle of the current segment that is being worked on
      */
-    function addEndcap(point, line_offset, angle) {
+    function addEndcap(point, line_offset, width_modifier, angle) {
       const endcap_extension = {
         none     : ((dx, w) => 0),
         square   : ((dx, w) => w),
@@ -707,7 +721,8 @@
       const extension_fn = endcap_extension[params.endcap] || endcap_extension.none;
       console.assert(endcap_extension[params.endcap] !== undefined, 'Invalid End Cap Assignment :', params.endcap);
 
-      const point_offset = extension_fn(line_offset, line_width / 2);
+      const current_line_width = width_modifier * line_width;
+      const point_offset = extension_fn(line_offset, current_line_width / 2);
       return Vector.offset(point, point_offset, angle);
     }
   }

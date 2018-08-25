@@ -18,7 +18,7 @@ let stroke_paths;
 let rng;
 
 const params = {
-    // Parameters
+    // ---- Default Parameters ----
     seed             : 1,
     line_width       : 20,
     pen_width        : 2,
@@ -27,10 +27,11 @@ const params = {
     stroke_alignment : 'center',
     corner_style     : 'square',
     line_style       : 'line',
-    polygon      : false,
+    line_width_style : 'default',
+    polygon          : false,
     show_input_line  : true,
 
-    // Options
+    // ---- Options ----
     endcaps : [
         'none',
         'square',
@@ -48,13 +49,29 @@ const params = {
         // 'round',
         // 'bevel',
     ],
-    line_styles : [
+
+    line_width_styles : [
+        'default',
+        'arrow',
+        'narrow',
+        'widen',
+        'cross',
+    ],
+    line_width_style_properties : {
+        default : [1],
+        arrow   : [1, 0],
+        narrow  : [1, 1/2, 0, 1/2],
+        widen   : [1, 3],
+        cross   : [1, -1],
+    },
+
+    line_styles: [
         'line',
         // 'dashed',
         // 'dotted',
         // 'dash_dot',
     ],
-    line_styles_properties : {
+    line_style_properties : {
         line     : (() => []),
         dashed   : (() => [this.pen_width, this.pen_width]),
         dotted   : (() => [0, this.pen_width]),
@@ -81,9 +98,10 @@ function setUpGui() {
     gui.add(params, "pen_width", 1, 10, 1).name("Stroke Width").onChange(createAndRender);
     gui.add(params, "draw_width", 1, 10, 1).name("Drawing width").onChange(createAndRender);
     gui.add(params, "endcap", params.endcaps).name("Stroke Endcap").onChange(createAndRender);
-    gui.add(params, "stroke_alignment", params.stroke_alignments).name("Stroke Alignment").onChange(createAndRender);
-    gui.add(params, "corner_style", params.corner_styles).name("Stroke Alignment").onChange(createAndRender);
-    gui.add(params, "line_style", params.line_styles).name("Line Style").onChange(createAndRender);
+    // gui.add(params, "stroke_alignment", params.stroke_alignments).name("Stroke Alignment").onChange(createAndRender);
+    // gui.add(params, "corner_style", params.corner_styles).name("Corner Styles").onChange(createAndRender);
+    // gui.add(params, "line_style", params.line_styles).name("Line Style").onChange(createAndRender);
+    gui.add(params, "line_width_style", params.line_width_styles).name("Line Width Style").onChange(createAndRender);
     gui.add(params, "polygon").name("Polygon").onChange(createAndRender);
     gui.add(params, "show_input_line").name("Show Input Line").onChange(render);
 }
@@ -105,13 +123,13 @@ function create() {
         pointInBbox()
     ];
 
-
     stroke_paths = createStroke(path, params.line_width, params.pen_width, {
-        polygon : params.polygon,
-        endcap : params.endcap,
-        corner : params.corner_style,
-        line_style : params.line_style,
-        align_stroke : params.stroke_alignment,
+        polygon          : params.polygon,
+        endcap           : params.endcap,
+        corner           : params.corner_style,
+        line_style       : params.line_style_properties[params.line_style](),
+        align_stroke     : params.stroke_alignment,
+        line_width_style : params.line_width_style_properties[params.line_width_style]
     });
 }
 
