@@ -5,6 +5,10 @@ import lineIntersection from 'line-intersection';
 export default function stroke(path, line_width, pen_thickness, options) {
   "use strict";
 
+  if (path.length == 1) {
+    return path;
+  }
+
   // ---- Options -----
   const defaults = {
     polygon          : false,     // Should the input path be a closed polygon

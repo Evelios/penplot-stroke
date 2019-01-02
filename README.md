@@ -59,9 +59,8 @@ const pen_thickness = 1; // The thickness of each individual pen line
 const output_paths = createStroke(path, line_width, pen_thickness);
 // > outputs 4 paths because you need 4 pen strokes to fill the line width of 1
 
-// Specifying parameters to create a strike with
-const rounded_paths = createStroke(path, line_width, pen_thickness, 
-  { 
+// Specifying parameter options to create the stroke
+const rounded_paths = createStroke(path, line_width, pen_thickness, { 
     endcap : 'round',
     polygon : true,
     line_width_style : [1, 2, 1, 1/2, 0]
@@ -101,6 +100,11 @@ distance of the line thickness) and at sharp angles produce unexpected behavior.
 They offten shoot way off of the corner which is causing the issue.
 
 # Release Notes
+
+# 1.1.5
+Fixed an issue where the algorithm would crash if it tried to create a stroke
+from a path that is a single vertex. Since it is only a point the algorithm
+just returns that point to avoid an error.
 
 # 1.1.4
 Added the option to vary the line width per vertex based on the ratio of the
